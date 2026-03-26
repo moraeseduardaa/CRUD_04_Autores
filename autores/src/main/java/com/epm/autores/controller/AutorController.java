@@ -3,26 +3,34 @@ package com.epm.autores.controller;
 import com.epm.autores.model.AutorModel;
 import com.epm.autores.service.AutorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/autores")
+@RequestMapping(path = "/autores")
 public class AutorController {
 
     @Autowired
     private AutorService autorService;
 
     @PostMapping
-    public AutorModel criarAutor(@RequestBody AutorModel autorModel){
-        return autorService.criarAutor(autorModel);
+    public ResponseEntity<AutorModel> criarAutor(@RequestBody AutorModel autorModel){
+
+        AutorModel request = autorService.criarAutor(autorModel);
+
+        URI uri = URI.create("/autores/" + request.getId());
+        return ResponseEntity.created(uri).body(request);
     }
 
     @GetMapping
-    public List<AutorModel> listarAutor(){
-        return autorService.findAll();
+    public ResponseEntity<List<AutorModel>> findAll(){
+
+        List<AutorModel> request = autorService.findAll();
+        return ResponseEntity.ok().body(request);
     }
 
     @GetMapping("/{id}")
@@ -31,8 +39,8 @@ public class AutorController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletarAutor(@PathVariable Long id){
+    public ResponseEntity<Void> deletarAutor(@PathVariable Long id){
         autorService.deletarAutor(id);
+        return ResponseEntity.noContent().build();
     }
-
 }
